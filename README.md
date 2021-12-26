@@ -62,5 +62,5 @@ if you try to enter more than 8 arguments. the current supported commands are:
   :00000001FF
 </PRE>
 
-  if you are missing an argument or two or enter none, it will drop you to a : prompt. 
+  if you are missing an argument or two or enter none, it will drop you to a ":" prompt. 
   from here you can type HELP or QUIT to continue.
