@@ -11,7 +11,11 @@ with an eeprom.
 You can easily build a truth table by building a design in logisim and then copy and pasting
 the truth table from logisim to a text file.
 
-so far it works if you leave the lables on the top. 
+so far it works if you leave the lables on the top, inputs on the left, outputs on the right.
+the inputs 1's place is the right most bit defined by the inputs variable (in the case of the 
+example it is d).  The outputs 1's place is the right most bit as defined by the outputs 
+variable (in the case of the example it is z).
+
 here is an example file: 
 <PRE>
 a	b	c	d	w	x	y	z
