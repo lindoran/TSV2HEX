@@ -1,0 +1,7 @@
+TO DO: 
+
+-Would like to add commands to do manual edits at an address.
+-Would like to add script file support, so that intigration into a make file or for faster rebuilding of the same file multiple times.
+-further error checking of the source file, to determine if there are formating errors.
+-support bringing in boolean algibra, lable reasignment support, and other features for importing from other sources.
+-clean up the source, perhapse support unicode.
