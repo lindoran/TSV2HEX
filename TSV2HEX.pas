@@ -28,7 +28,7 @@ const
   CLINELENGTH   = 16;            // # of b in a line in .HEX (0-15 = 16)
   CLASTLINE     = 2047;          // # of lines in .HEX counting line 1 as 0
   CROMBYTES     = 32767;         // total number of bytes in ROM
-  CVERSION      = '1.0 Beta';    // version #
+  CVERSION      = '1.1 Beta';    // version #
   CXOFFSET      = ':00000001FF'; //XGPro adds this, I am too it's prob. not req.
 var
   inputfilename,outfilename :string;
@@ -165,7 +165,7 @@ begin
    while args <> 0 do
     begin
      args := args -2;
-     TestCommand(UpCase(CommandsList[operation]),UpCase(CommandsList[operation+1]));
+     TestCommand(UpCase(CommandsList[operation]),CommandsList[operation+1]);
      operation := operation + 2;
     end;
 end;
@@ -224,6 +224,7 @@ begin
     writeln('Too Many Arguments found!');
     Halt(1);
    end;
+  if paramCount() = 0 then exit;
   for count := 1 to 8 do CommandsList[count] := '';
   for count := 1 to paramCount() do CommandsList[count] := paramStr(count);
   RunCommands(count);
