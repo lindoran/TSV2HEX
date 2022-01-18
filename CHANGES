@@ -1,3 +1,6 @@
 B1.01 == Fixed 2 issues: 1 ) the file loader was forcing all file names to caps this was causeing issues with case sensitive file systems like linux.
 2) the program was running the commands table even if there were no arguments before issueing several errors and dropping to the macro prompt 
 for more user input.
+
+B1.02 == Added a feature to add an auxilery truth table to the end of an existing one, by simply starting at the next address offset. This obviously
+has limited use however it has limited usecase for the UFS4057ES Project on hack a day
