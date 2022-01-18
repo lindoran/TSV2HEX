@@ -28,11 +28,12 @@ const
   CLINELENGTH   = 16;            // # of b in a line in .HEX (0-15 = 16)
   CLASTLINE     = 2047;          // # of lines in .HEX counting line 1 as 0
   CROMBYTES     = 32767;         // total number of bytes in ROM
-  CVERSION      = '1.1 Beta';    // version #
+  CVERSION      = '1.2 Beta';    // version #
   CXOFFSET      = ':00000001FF'; //XGPro adds this, I am too it's prob. not req.
 var
-  inputfilename,outfilename :string;
-  inputs,outputs            :integer;
+  inputfilename,outfilename,
+  auxfilename               :string;
+  inputs,outputs,lastbyte   :integer;
 
   databytes                 :array[0..CROMBYTES] of uint8;
   CommandsList              :Array [1..8] of string;
@@ -63,7 +64,7 @@ end;
 Procedure TestCommand (InputCommand,Argument : String);
 begin
      case InputCommand OF
-       'INP' :
+        'INP' :
           begin
            if IsNumber(Argument) then
             begin
@@ -89,12 +90,18 @@ begin
            inputfilename := Argument;
            exit;
           end;
+       'AFN' :
+          begin
+           auxfilename   := Argument;
+           exit;
+          end;
        'QUIT': halt(1);
        'VARS': begin
                   writeln('Inputs  : ',inputs);
                   writeln('Outputs : ',outputs);
                   writeln('Out File: ',outfilename);
                   writeln('In File : ',inputfilename);
+                  writeln('Aux File: ',auxfilename);
                   exit;
                end;
        'HELP': begin
@@ -119,6 +126,8 @@ begin
                   writeln('OTP <Argument> : Example OUP 4 sets the number of outputs to 4');
                   writeln('OFN <Argument> : Example OFN <filename> sets output filename');
                   writeln('IFN <Argument> : Example IFN <filename> sets input filename');
+                  writeln('AFN <Argument> : Example AFN <filename> sets Aux. Truth table to');
+                  writeln('                 Read in at the end of the main truth table (set first!)');
                   writeln('VARS           : Displays currently set Variables');
                   writeln('QUIT           : Exits before doing anything further (abort)');
                   exit;
@@ -266,6 +275,49 @@ begin
        // string and useing the strtoint. this is then casted to a 'unit8' data type by
        // the compiler; this is lazy and not very iso portable but should work on lazurus.
       databytes[strtoint('%'+copy(WorkLine,1,inputs))] := strtoint('%'+copy(WorkLine,inputs+1,outputs));
+      lastbyte:=strtoint('%'+copy(WorkLine,1,inputs));
+      inpLine.Free;
+     end;
+    end;    // while;
+    CloseFile(tsvTfile);
+    except       // on a file error exit.
+     on E: EInOutError do begin
+       writeln('File handling error: ',E.Message);
+       halt(1);      // end exicute on error
+     end;
+    end;
+end;
+procedure LoadAux;           // basically a copy; these two routines can be combined
+
+var
+ tsvTfile : TextFile;
+ inpLine:TStrings;
+ thisPart,WorkLine,readLine:string;
+begin
+  lastbyte := lastbyte+1;
+  AssignFile(tsvTfile,auxfilename);  // open work file check for errors.
+  try
+   reset(tsvTfile);
+   readln(tsvTfile,readLine); // read in the first line to skip it.
+   while not eof(tsvTfile) do
+    begin
+     readln(tsvTfile,readLine);
+     inpLine:=TStringlist.Create;
+     try  // trys to pull just the data in the line from the tabs.
+      inpLine.Delimiter := #9;     // #9 = TAB/ASCII
+      inpLine.StrictDelimiter := true;
+      inpLine.DelimitedText := readLine;
+      WorkLine := '';        // zero out the formatted output string
+      for ThisPart in inpLine do  // build the output string 1 bit at a time
+            WorkLine := WorkLine + ThisPart;
+     finally
+       // copy data to address location in databytes, by parceing the line useing copy,
+       // looking at the numbers as binary, by appending % to the begining of the sub
+       // string and useing the strtoint. this is then casted to a 'unit8' data type by
+       // the compiler; this is lazy and not very iso portable but should work on lazurus.
+       // with aux we add the last byte from the main file as a offset+1. this asumes the
+       // truth table starts at 0.
+      databytes[lastbyte+strtoint('%'+copy(WorkLine,1,inputs))] := strtoint('%'+copy(WorkLine,inputs+1,outputs));
       inpLine.Free;
      end;
     end;    // while;
@@ -329,5 +381,6 @@ begin
   CheckInputValues;
   GetValues;
   LoadTable;
+  if auxfilename <> '' then loadaux;
   SaveTable;
 end.

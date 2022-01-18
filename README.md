@@ -4,7 +4,7 @@ Tiny Free Pascal Program for dumping a TSV ASCII Truth Table to Intel .HEX file
 (C) 2021 David Collins 
 Released under the MIT Licence 
 
-This is my simple program for converting a TSV (Tab Separated Values) ASCII file
+This is Beta 1.0 of my simple program for converting a TSV (Tab Separated Values) ASCII file
 to a Intel .HEX file. This is usefull if you need to make a simple combined logic replacement
 with an eeprom.
 
